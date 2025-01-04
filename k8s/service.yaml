@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-freecad-flask-service
+spec:
+  selector:
+    app: my-freecad-flask # Связь с Deployment
+  ports:
+  - protocol: TCP
+    port: 80              # Порт для внешнего доступа
+    targetPort: 5000      # Порт контейнера Flask
+  type: LoadBalancer       # Для внешнего доступа (в облаках)

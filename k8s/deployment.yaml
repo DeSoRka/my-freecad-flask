@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-freecad-flask-deployment
+  labels:
+    app: my-freecad-flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-freecad-flask
+  template:
+    metadata:
+      labels:
+        app: my-freecad-flask
+    spec:
+      containers:
+      - name: my-freecad-flask
+        image: amrit3701/freecad-cli:latest # Укажите имя образа из Docker Hub
+        ports:
+        - containerPort: 5000 # Flask слушает на 5000

@@ -1,0 +1,52 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-scan-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Скачиваем (чекаутим) код из репозитория
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      # 2. Устанавливаем Docker Buildx для сборки Docker-образов
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Сборка Docker-образа (локально в Actions)
+      - name: Build Docker image
+        run: |
+          docker build -t my-freecad-flask:${{ github.sha }} .
+
+      # 4. Сканирование образа с помощью Trivy
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'my-freecad-flask:${{ github.sha }}'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
+          vuln-type: 'os,library'
+          ignore-unfixed: false
+
+      # 5. Запуск контейнера для проверки (Docker in Docker)
+      - name: Run container
+        run: |
+          # Запускаем контейнер в фоновом режиме (-d)
+          docker run -d --name test-freecad -p 5000:5000 my-freecad-flask:${{ github.sha }}
+          # Немного ждем, пока контейнер поднимется (например, 5 секунд)
+          sleep 5
+          # Проверяем, что приложение на 5000 порту отвечает
+          # например, curl localhost:5000 или другая проверка
+          curl -f http://localhost:5000 || (echo "App not responding" && exit 1)
+
+      # 6. (Опционально) Остановка и удаление контейнера
+      - name: Stop and remove container
+        run: |
+          docker stop test-freecad
+          docker rm test-freecad
