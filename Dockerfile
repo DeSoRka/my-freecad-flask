@@ -1,14 +1,31 @@
 FROM amrit3701/freecad-cli:latest
 
-RUN apt-get update && \
-    apt-get install -y --only-upgrade libexpat1 && \
-    apt-get upgrade -y && \
+# Установка зависимостей для сборки Python из исходников
+RUN apt-get update && apt-get install -y \
+    wget build-essential zlib1g-dev libssl-dev libncurses-dev \
+    libffi-dev libsqlite3-dev libreadline-dev libbz2-dev && \
     apt-get clean
 
-# Устанавливаем ваши приложения и зависимости (например, Python)
-RUN apt-get install -y python3 python3-pip && pip3 install flask
+# Скачивание и сборка Python 3.9
+RUN wget https://www.python.org/ftp/python/3.9.13/Python-3.9.13.tgz && \
+    tar xvf Python-3.9.13.tgz && \
+    cd Python-3.9.13 && \
+    ./configure --enable-optimizations && \
+    make && make install && \
+    cd .. && rm -rf Python-3.9.13 Python-3.9.13.tgz
 
+# Устанавливаем pip для Python 3.9
+RUN python3.9 -m ensurepip && python3.9 -m pip install --upgrade pip
+
+# Копируем файл зависимостей
+COPY requirements.txt /app/requirements.txt
+
+# Устанавливаем зависимости
+RUN python3.9 -m pip install -r /app/requirements.txt
+
+# Настраиваем рабочую директорию
 WORKDIR /app
 COPY . /app
 
-CMD ["python3", "app.py"]
+# Запускаем приложение
+CMD ["python3.9", "app.py"]
