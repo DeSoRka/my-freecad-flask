@@ -1,15 +1,6 @@
 FROM amrit3701/freecad-cli:latest
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Если pip отсутствует, добавьте
-    python3-pip \
-    # Опциональные пакеты
-    libfreetype6 \
-    libnss3 \
-    libpq-dev \
-    libexpat1 \
-    && apt-get clean
-
+RUN apt-get upgrade -y && apt-get dist-upgrade -y
 # Убедитесь, что pip действительно доступен
 RUN pip3 --version
 
