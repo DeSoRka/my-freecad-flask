@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Если pip отсутствует, добавьте
     python3-pip \
     # Опциональные пакеты
+    libfreetype6 \
     libexpat1 \
     && apt-get clean
 
