@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     # Опциональные пакеты
     libfreetype6 \
+    libnss3 \
     libexpat1 \
     && apt-get clean
 
