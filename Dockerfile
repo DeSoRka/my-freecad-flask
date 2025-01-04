@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Опциональные пакеты
     libfreetype6 \
     libnss3 \
+    libpq-dev \
     libexpat1 \
     && apt-get clean
 
