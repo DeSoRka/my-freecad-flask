@@ -10,7 +10,7 @@ def index():
 
 @app.route("/create_cube", methods=["POST"])
 def create_cube():
-    width = float(request.form.get("width", 10.0))
+    width = float(request.form.get("width", 5.0))
     height = float(request.form.get("height", 5.0))
     depth = float(request.form.get("depth", 2.5))
 
